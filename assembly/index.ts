@@ -94,6 +94,7 @@ export function transfer(sender: i32, receiver: i32, amount: u32): i32 {
     }
     working_state.ee_state[sender] -= amount;
     working_state.ee_state[receiver] += amount;
+    working_state.calc_state_root();
     return 1;
   }
   return -2;

@@ -3765,6 +3765,8 @@
    local.get $2
    i32.add
    call $~lib/array/Array<u32>#__set
+   global.get $assembly/index/working_state
+   call $assembly/index/State#calc_state_root
    i32.const 1
    return
   end

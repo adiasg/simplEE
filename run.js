@@ -46,9 +46,9 @@ class WASMState extends State {
     // https://github.com/AssemblyScript/assemblyscript/tree/master/lib/loader
 
     // state_root is WASM Array<u32>(1) / JS Int32Array(1)
-    let state_root = instance.__getInt32ArrayView(memory_array[ptr + instance.STATE_STATE_ROOT_OFFSET >>> 2]);
+    let state_root = instance.__getArrayView(memory_array[ptr + instance.STATE_STATE_ROOT_OFFSET >>> 2]);
     // ee_state is Array<u32>(5) / JS Int32Array(5)
-    let ee_state = instance.__getInt32ArrayView(memory_array[ptr + instance.STATE_EE_STATE_OFFSET >>> 2]);
+    let ee_state = instance.__getArrayView(memory_array[ptr + instance.STATE_EE_STATE_OFFSET >>> 2]);
     super(state_root, ee_state);
 
     // Store the WASM pointer to the WASM state object
@@ -64,3 +64,24 @@ let post_state = new WASMState(instance, post_state_ptr);
 
 let working_state_ptr = instance.getWorkingState();
 let working_state = new WASMState(instance, working_state_ptr);
+
+console.log("Pre-State Data:")
+for (let i=0; i<5; i++) {
+  pre_state.ee_state[i] = i;
+}
+instance.updateRoot(pre_state.ptr);
+console.log("pre_state.ee_state:", pre_state.ee_state)
+console.log("pre_state.state_root:", pre_state.state_root[0].toString(16))
+console.log("")
+
+console.log("After setUp:")
+instance.setUp(working_state.ptr)
+console.log("working_state.ee_state:", working_state.ee_state)
+console.log("working_state.state_root:", working_state.state_root[0].toString(16))
+console.log("")
+
+console.log("After transfer(3, 0, 2)")
+instance.transfer(3, 0, 2);
+console.log("working_state.ee_state:", working_state.ee_state)
+console.log("working_state.state_root:", working_state.state_root[0].toString(16))
+console.log("")
