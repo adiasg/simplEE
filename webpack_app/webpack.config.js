@@ -18,5 +18,8 @@ module.exports = {
     topLevelAwait: true,
 		asyncWebAssembly: true,
 		importAwait: true
-	}
+	},
+  externals: {
+    jquery: 'jQuery'
+  }
 };

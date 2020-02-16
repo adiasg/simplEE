@@ -1,5 +1,7 @@
 (async () => {
-  const loader = require("../../" + "/node_modules/assemblyscript/lib/loader");
+  const $ = require('jquery');
+
+  const loader = require("../../node_modules/assemblyscript/lib/loader");
 
   //// Initialize the imports that the WASM module expects: memory, table, and any JS functions
   //// For importing memory and table, use the "--importMemory" and "--ImportTable" flags with asc (AssemblyScript compiler)
@@ -64,6 +66,14 @@
   let working_state_ptr = instance.getWorkingState();
   let working_state = new WASMState(instance, working_state_ptr);
 
+  $('#xfer-btn').click( (e) => {
+    console.log("After transfer(3, 0, 1)")
+    instance.transfer(3, 0, 1);
+    console.log("working_state.ee_state:", working_state.ee_state)
+    console.log("working_state.state_root:", working_state.state_root[0].toString(16))
+    console.log("")
+  });
+
   console.log("Pre-State Data:")
   for (let i=0; i<5; i++) {
     pre_state.ee_state[i] = i;
@@ -75,12 +85,6 @@
 
   console.log("After setUp:")
   instance.setUp(working_state.ptr)
-  console.log("working_state.ee_state:", working_state.ee_state)
-  console.log("working_state.state_root:", working_state.state_root[0].toString(16))
-  console.log("")
-
-  console.log("After transfer(3, 0, 2)")
-  instance.transfer(3, 0, 2);
   console.log("working_state.ee_state:", working_state.ee_state)
   console.log("working_state.state_root:", working_state.state_root[0].toString(16))
   console.log("")
