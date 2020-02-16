@@ -22,6 +22,7 @@ const imports = {
 
 // Instantiate the WASM module
 const instance = loader.instantiateSync(compiled, imports);
+const SP_SERVER = "http://localhost:3000";
 
 /*-------------------------------------------------------------------------------------------------------------*/
 
@@ -115,7 +116,6 @@ console.log("\tpost_state.state_root:", post_state.state_root[0].toString(16));
 console.log("");
 console.log("");
 /*-------------------------------------------------------------------------------------------------------------*/
-
 
 function verifyBlock(instance, block) {
   let pre_state_ptr = instance.getPreState();
@@ -218,7 +218,6 @@ let genesis_block = createGenesisBlock(instance, genesis_state);
 // console.log(genesis_block);
 // console.log("");
 
-
 function printChain(chaindata) {
   for (let i=0; i<chaindata.length; i++) {
     console.log("Block", i);
@@ -229,7 +228,7 @@ function printChain(chaindata) {
 async function postGenesisBlock() {
   console.log("");
   console.log("[*] Posting the genesis block to the SP")
-  let response = await fetch("http://localhost:3000/updateLatestBlock", {
+  let response = await fetch(SP_SERVER+"/updateLatestBlock", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(genesis_block)
@@ -238,20 +237,29 @@ async function postGenesisBlock() {
   printChain(JSON.parse(await response.json()));
 }
 
-async function makeNextBlock(txs) {
-  console.log("");
-  console.log("[*] Posting the next block to the SP")
-  let latest_block = await fetch("http://localhost:3000/getLatestBlock", {
+async function getLatestBlock() {
+  console.log("[*] Fetching the latest block from the SP")
+  let latest_block = await fetch(SP_SERVER+"/getLatestBlock", {
     method: 'GET'
   });
-  latest_block = await latest_block.json();
+  console.log("The latest block is:");
+  let latest_block_data = await latest_block.json();
+  console.log(latest_block_data);
+  return latest_block_data;
+}
+
+async function makeNextBlock(txs) {
+  let latest_block = await getLatestBlock();
+
+  console.log("");
+  console.log("[*] Posting the next block to the SP")
   // console.log(await latest_block);
 
   let next_block_input = {'pre': latest_block['post'], 'transactions': txs};
   let next_block = createBlock(instance, next_block_input);
   // console.log("next_block:", next_block);
 
-  let current_chain = await fetch("http://localhost:3000/updateLatestBlock", {
+  let current_chain = await fetch(SP_SERVER+"/updateLatestBlock", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(next_block)
