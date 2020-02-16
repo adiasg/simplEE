@@ -72,12 +72,20 @@ export function getWorkingState(): State {
 // -----------------
 
 
-export function setUp(working_state: State): void {
-  // setUp functions that copies pre_state into working_state
+export function setUp(): void {
+  // setUp function that copies pre_state into working_state
   for (let i=0; i<working_state.ee_state.length; i++) {
     working_state.ee_state[i] = pre_state.ee_state[i];
   }
   working_state.calc_state_root();
+}
+
+export function cleanUp(): void {
+  // cleanUp function that copies working_state into post_state
+  for (let i=0; i<post_state.ee_state.length; i++) {
+    post_state.ee_state[i] = working_state.ee_state[i];
+  }
+  post_state.calc_state_root();
 }
 
 export function updateRoot(state: State): void {
@@ -87,6 +95,7 @@ export function updateRoot(state: State): void {
 
 
 // -----------------
+// Implement the EE application logic here
 export function transfer(sender: i32, receiver: i32, amount: u32): i32 {
   if (sender<5 && receiver<5 && amount>0) {
     if (working_state.balance(sender)<=amount) {

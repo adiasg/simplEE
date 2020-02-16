@@ -12,10 +12,11 @@
   "license": "ISC",
   "devDependencies": {
     "webpack": "5.0.0-beta.13",
-    "webpack-cli": "3.3.11"
+    "webpack-cli": "^3.3.11"
   },
   "dependencies": {
     "lodash": "4.17.15",
-    "static-server": "2.2.1"
+    "static-server": "2.2.1",
+    "webpack": "^4.41.6"
   }
 }

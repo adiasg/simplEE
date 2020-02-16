@@ -3,10 +3,10 @@
  (type $i32_=>_i32 (func (param i32) (result i32)))
  (type $i32_i32_=>_i32 (func (param i32 i32) (result i32)))
  (type $i32_i32_i32_=>_none (func (param i32 i32 i32)))
+ (type $none_=>_none (func))
  (type $i32_=>_none (func (param i32)))
  (type $i32_i32_i32_=>_i32 (func (param i32 i32 i32) (result i32)))
  (type $none_=>_i32 (func (result i32)))
- (type $none_=>_none (func))
  (type $i32_i32_i32_i32_=>_none (func (param i32 i32 i32 i32)))
  (import "env" "memory" (memory $0 1))
  (data (i32.const 16) "\1e\00\00\00\01\00\00\00\01\00\00\00\1e\00\00\00~\00l\00i\00b\00/\00r\00t\00/\00t\00l\00s\00f\00.\00t\00s\00")
@@ -54,6 +54,7 @@
  (export "getPostState" (func $assembly/index/getPostState))
  (export "getWorkingState" (func $assembly/index/getWorkingState))
  (export "setUp" (func $assembly/index/setUp))
+ (export "cleanUp" (func $assembly/index/cleanUp))
  (export "updateRoot" (func $assembly/index/updateRoot))
  (export "transfer" (func $assembly/index/transfer))
  (export "STATE_ID" (global $assembly/index/STATE_ID))
@@ -3671,44 +3672,71 @@
   global.get $assembly/index/working_state
   call $~lib/rt/pure/__retain
  )
- (func $assembly/index/setUp (; 42 ;) (param $0 i32)
+ (func $assembly/index/setUp (; 42 ;)
+  (local $0 i32)
   (local $1 i32)
-  (local $2 i32)
-  local.get $0
-  call $~lib/rt/pure/__retain
-  local.set $0
   i32.const 0
-  local.set $1
+  local.set $0
   loop $for-loop|0
-   local.get $1
    local.get $0
+   global.get $assembly/index/working_state
    i32.load
    call $~lib/array/Array<u32>#get:length
    i32.lt_s
-   local.set $2
-   local.get $2
+   local.set $1
+   local.get $1
    if
-    local.get $0
+    global.get $assembly/index/working_state
     i32.load
-    local.get $1
+    local.get $0
     global.get $assembly/index/pre_state
     i32.load
-    local.get $1
+    local.get $0
     call $~lib/array/Array<u32>#__get
     call $~lib/array/Array<u32>#__set
-    local.get $1
+    local.get $0
     i32.const 1
     i32.add
-    local.set $1
+    local.set $0
     br $for-loop|0
    end
   end
-  local.get $0
+  global.get $assembly/index/working_state
   call $assembly/index/State#calc_state_root
-  local.get $0
-  call $~lib/rt/pure/__release
  )
- (func $assembly/index/updateRoot (; 43 ;) (param $0 i32)
+ (func $assembly/index/cleanUp (; 43 ;)
+  (local $0 i32)
+  (local $1 i32)
+  i32.const 0
+  local.set $0
+  loop $for-loop|0
+   local.get $0
+   global.get $assembly/index/post_state
+   i32.load
+   call $~lib/array/Array<u32>#get:length
+   i32.lt_s
+   local.set $1
+   local.get $1
+   if
+    global.get $assembly/index/post_state
+    i32.load
+    local.get $0
+    global.get $assembly/index/working_state
+    i32.load
+    local.get $0
+    call $~lib/array/Array<u32>#__get
+    call $~lib/array/Array<u32>#__set
+    local.get $0
+    i32.const 1
+    i32.add
+    local.set $0
+    br $for-loop|0
+   end
+  end
+  global.get $assembly/index/post_state
+  call $assembly/index/State#calc_state_root
+ )
+ (func $assembly/index/updateRoot (; 44 ;) (param $0 i32)
   local.get $0
   call $~lib/rt/pure/__retain
   local.set $0
@@ -3717,7 +3745,7 @@
   local.get $0
   call $~lib/rt/pure/__release
  )
- (func $assembly/index/transfer (; 44 ;) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
+ (func $assembly/index/transfer (; 45 ;) (param $0 i32) (param $1 i32) (param $2 i32) (result i32)
   local.get $0
   i32.const 5
   i32.lt_s
@@ -3772,13 +3800,13 @@
   end
   i32.const -2
  )
- (func $~start (; 45 ;)
+ (func $~start (; 46 ;)
   call $start:assembly/index
  )
- (func $~lib/rt/pure/__collect (; 46 ;)
+ (func $~lib/rt/pure/__collect (; 47 ;)
   return
  )
- (func $~lib/rt/pure/decrement (; 47 ;) (param $0 i32)
+ (func $~lib/rt/pure/decrement (; 48 ;) (param $0 i32)
   (local $1 i32)
   (local $2 i32)
   local.get $0
@@ -3853,7 +3881,7 @@
    i32.store offset=4
   end
  )
- (func $~lib/rt/pure/__visit (; 48 ;) (param $0 i32) (param $1 i32)
+ (func $~lib/rt/pure/__visit (; 49 ;) (param $0 i32) (param $1 i32)
   local.get $0
   global.get $~lib/heap/__heap_base
   i32.lt_u
@@ -3877,10 +3905,10 @@
   i32.sub
   call $~lib/rt/pure/decrement
  )
- (func $~lib/array/Array<u32>#__visit_impl (; 49 ;) (param $0 i32) (param $1 i32)
+ (func $~lib/array/Array<u32>#__visit_impl (; 50 ;) (param $0 i32) (param $1 i32)
   nop
  )
- (func $~lib/rt/__visit_members (; 50 ;) (param $0 i32) (param $1 i32)
+ (func $~lib/rt/__visit_members (; 51 ;) (param $0 i32) (param $1 i32)
   (local $2 i32)
   block $block$4$break
    block $switch$1$default
