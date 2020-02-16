@@ -67,11 +67,15 @@
   let working_state = new WASMState(instance, working_state_ptr);
 
   $('#xfer-btn').click( (e) => {
-    console.log("After transfer(3, 0, 1)")
-    instance.transfer(3, 0, 1);
-    console.log("working_state.ee_state:", working_state.ee_state)
-    console.log("working_state.state_root:", working_state.state_root[0].toString(16))
-    console.log("")
+    const res = instance.transfer(3, 0, 1);
+    if (res == 1) {
+      console.log("After transfer(3, 0, 1)")
+      console.log("working_state.ee_state:", working_state.ee_state)
+      console.log("working_state.state_root:", working_state.state_root[0].toString(16))
+      console.log("")
+    } else {
+      console.log("Attempted transfer(3, 0, 1) but failed!");
+    }
   });
 
   console.log("Pre-State Data:")
